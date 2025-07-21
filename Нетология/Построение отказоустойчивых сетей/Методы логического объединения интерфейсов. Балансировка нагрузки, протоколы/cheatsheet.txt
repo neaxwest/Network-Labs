@@ -1,0 +1,64 @@
+SW11
+
+en
+conf t
+interface range f0/1-4
+shutdown
+channel-group 1 mode active
+no shutdown
+
+en
+conf t
+interface range f0/5-8
+shutdown
+channel-group 4 mode active
+no shutdown
+
+
+SW12
+
+en
+conf t
+interface range f0/5-8
+shutdown
+channel-group 2 mode active
+no shutdown
+
+SW13
+
+en
+conf t
+interface range f0/1-4
+shutdown
+channel-group 2 mode active
+no shutdown
+
+en
+conf t
+interface range f0/5-8
+shutdown
+channel-group 3 mode active
+no shutdown
+
+
+SW14
+
+en
+conf t
+interface range f0/1-4
+shutdown
+channel-group 3 mode active
+no shutdown
+
+en
+conf t
+interface range f0/5-8
+shutdown
+channel-group 4 mode active
+no shutdown
+
+
+
+
+
+
