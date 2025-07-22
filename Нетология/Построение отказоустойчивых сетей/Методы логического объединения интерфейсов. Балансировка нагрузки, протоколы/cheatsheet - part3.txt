@@ -1,0 +1,61 @@
+SW0
+
+en
+conf t
+interface range f0/1-2
+shutdown
+channel-group 1 mode active
+no shutdown
+
+
+interface range f0/3-4
+shutdown
+channel-group 2 mode active
+no shutdown
+
+SW1
+
+en
+conf t
+interface range f0/1-2
+shutdown
+channel-group 1 mode active
+no shutdown
+
+
+interface range f0/3-4
+shutdown
+channel-group 2 mode active
+no shutdown
+
+
+CORE 1
+
+en
+conf t
+interface range gig1/0/1-2
+shutdown
+channel-group 2 mode active
+no shutdown
+
+interface range gig1/0/3-5
+shutdown
+channel-group 3 mode active
+no shutdown
+
+
+CORE2
+
+en
+conf t
+interface range gig1/0/1-2
+shutdown
+channel-group 2 mode active
+no shutdown
+
+interface range gig1/0/3-5
+shutdown
+channel-group 3 mode active
+no shutdown
+
+

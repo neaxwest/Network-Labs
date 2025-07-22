@@ -1,0 +1,24 @@
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+interface Port-channel1
+ switchport mode access
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+ switchport mode access
+ channel-group 1 mode on
+!
+interface FastEthernet0/3
+ switchport mode access
+ channel-group 1 mode on
+!
+interface FastEthernet0/4
+ switchport mode access
+ channel-group 1 mode on
+!
+interface FastEthernet0/5
+ switchport mode access
+ channel-group 1 mode on
+ shutdown
