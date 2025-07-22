@@ -1,0 +1,187 @@
+!!!!!PC 1 Kali!!!!!!!
+
+vi /etc/network/interfaces
+
+auto eth0
+iface eth0 inet static
+address 192.168.0.10
+netmask 255.255.255.0
+gateway 192.168.0.254
+
+systemctl restart networking
+
+
+!!!!!!SW1 - no settings!!!!!
+
+!!!!!!!!!R1!!!!!!
+
+en
+conf t
+
+interface GigabitEthernet0/0
+ip address 192.168.0.1 255.255.255.0
+standby 1 ip 192.168.0.254
+standby 1 priority 110
+standby 1 preempt
+no shutdown
+
+interface GigabitEthernet0/1
+ip address 10.1.0.1 255.255.255.252
+no shutdown
+
+ip route 0.0.0.0 0.0.0.0 10.1.0.2
+
+end
+wr mem
+
+
+!!!!!R2!!!!!!
+
+en
+conf t
+
+interface GigabitEthernet0/0
+ip address 192.168.0.2 255.255.255.0
+standby 1 ip 192.168.0.254
+standby 1 priority 105
+no shutdown
+
+interface GigabitEthernet0/1
+ ip address 10.2.0.1 255.255.255.252
+no shutdown
+
+ip route 0.0.0.0 0.0.0.0 10.2.0.2
+
+end
+wr mem
+
+!!!!!!R3!!!!!
+
+en
+conf t
+
+interface GigabitEthernet0/0
+ip address 192.168.0.3 255.255.255.0
+standby 1 ip 192.168.0.254
+standby 1 priority 100
+no shutdown
+
+interface GigabitEthernet0/1
+ip address 10.3.0.1 255.255.255.252
+no shutdown
+
+ip route 0.0.0.0 0.0.0.0 10.3.0.2
+
+end
+wr mem
+
+
+!!!!!NGFW!!!!!!
+
+en
+conf t
+
+interface GigabitEthernet0/0
+ip address 10.1.0.2 255.255.255.252
+no shutdown
+
+interface GigabitEthernet0/1
+ip address 10.2.0.2 255.255.255.252
+no shutdown
+
+interface GigabitEthernet0/2
+ip address 10.3.0.2 255.255.255.252
+no shutdown
+
+interface GigabitEthernet0/3
+ip address 10.4.0.2 255.255.255.252
+no shutdown
+
+ip sla 1
+icmp-echo 10.1.0.1
+timeout 5000
+frequency 6
+
+ip sla 2
+icmp-echo 10.2.0.1
+timeout 5000
+frequency 6
+
+ip sla 3
+icmp-echo 10.3.0.1
+timeout 5000
+frequency 6
+
+ip sla schedule 1 life forever start-time now
+ip sla schedule 2 life forever start-time now
+ip sla schedule 3 life forever start-time now
+
+track 1 ip sla 1 reachability
+track 2 ip sla 2 reachability
+track 3 ip sla 3 reachability
+
+ip route 192.168.0.0 255.255.255.0 10.1.0.1 track 1
+ip route 192.168.0.0 255.255.255.0 10.2.0.1 10 track 2
+ip route 192.168.0.0 255.255.255.0 10.3.0.1 20 track 3
+ip route 0.0.0.0 0.0.0.0 10.4.0.1
+ip route 10.10.10.10 255.255.255.255 10.4.0.1
+
+end
+
+wr mem
+
+
+!!!!!!ISP Rostelecom!!!!!!!!
+
+en
+conf t
+
+interface Loopback0
+ip address 10.10.10.10 255.255.255.255
+no shutdown
+
+interface GigabitEthernet0/0
+ip address 10.4.0.1 255.255.255.252
+no shutdown
+
+interface GigabitEthernet0/1
+ip address 10.5.0.1 255.255.255.252
+no shutdown
+
+ip route 192.168.0.0 255.255.255.0 10.4.0.2
+ip route 192.168.1.0 255.255.255.0 10.5.0.2
+
+end 
+wr mem
+
+!!!!!!!!!!!! R4 !!!!!!!!!!!!!
+
+en
+conf t
+
+interface GigabitEthernet0/0
+ip address 10.5.0.2 255.255.255.252
+no shutdown
+
+interface GigabitEthernet0/1
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+
+ip route 192.168.0.0 255.255.255.0 10.5.0.1
+ip route 10.10.10.10 255.255.255.255 10.5.0.1
+
+end 
+wr mem
+
+!!!!!SW 2 No settings!!!!!!
+
+
+!!!!!PC 2 Ubuntu!!!!!!
+
+auto eth0
+iface eth0 inet static
+address 192.168.1.10
+netmask 255.255.255.0
+gateway 192.168.1.1
+
+systemctl restart networking
