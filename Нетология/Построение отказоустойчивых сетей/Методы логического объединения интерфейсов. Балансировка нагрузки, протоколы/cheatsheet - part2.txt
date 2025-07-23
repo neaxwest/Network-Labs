@@ -13,16 +13,26 @@ interface range f0/5-8
 shutdown
 channel-group 4 mode active
 no shutdown
-
+end
+wr mem
 
 SW12
 
 en
 conf t
+
+interface range f0/1-4
+shutdown
+channel-group 1 mode active
+no shutdown
+
 interface range f0/5-8
 shutdown
 channel-group 2 mode active
 no shutdown
+
+end
+wr mem
 
 SW13
 
@@ -40,6 +50,9 @@ shutdown
 channel-group 3 mode active
 no shutdown
 
+end
+wr mem
+
 
 SW14
 
@@ -56,6 +69,9 @@ interface range f0/5-8
 shutdown
 channel-group 4 mode active
 no shutdown
+
+end
+wr mem
 
 
 

@@ -1,0 +1,93 @@
+﻿!!!!!!!!!!!SW0!!!!!!!!!
+
+en
+conf t
+
+interface fa 0/1
+description Server1
+switchport mode access
+switchport access vlan 10
+no shutdown
+exit
+
+interface fa 0/2
+description Server2
+switchport mode access
+switchport access vlan 10
+no shutdown
+exit
+
+vlan 10
+name Servers
+
+interface GigabitEthernet0/1
+description Uplink to SW1 - 1
+switchport mode trunk
+switchport trunk allowed vlan 10
+channel-group 1 mode active
+no shutdown
+exit
+
+interface GigabitEthernet0/2
+description Uplink to SW1 - 2
+switchport mode trunk
+switchport trunk allowed vlan 10
+channel-group 1 mode active
+no shutdown
+exit
+
+interface Port-channel1
+description EtherChannel to SW1
+switchport mode trunk
+switchport trunk allowed vlan 10
+no shutdown
+exit
+
+interface vlan 10
+ip address 192.168.10.2 255.255.255.0
+no shutdown
+
+end
+wr mem
+
+!!!!!!!!!!!!!SW1!!!!!!!!!!!
+
+en
+conf t
+
+vlan 10
+name Servers
+exit
+
+interface Vlan10
+ip address 192.168.10.1 255.255.255.0
+no shutdown
+exit
+
+interface GigabitEthernet0/1
+description Uplink to SW0 - 1
+switchport mode trunk
+switchport trunk allowed vlan 10
+channel-group 1 mode active
+no shutdown
+exit
+
+interface GigabitEthernet0/2
+description Uplink to SW0 - 2
+switchport mode trunk
+switchport trunk allowed vlan 10
+channel-group 1 mode active
+no shutdown
+exit
+
+interface Port-channel1
+description EtherChannel to SW0
+switchport mode trunk
+switchport trunk allowed vlan 10
+no shutdown
+exit
+
+port-channel load-balance src-dst-ip
+
+end
+wr mem
