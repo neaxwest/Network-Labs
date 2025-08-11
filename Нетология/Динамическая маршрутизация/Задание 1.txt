@@ -1,0 +1,85 @@
+Задание 1. Запуск протокола OSPF
+Запустите протокол OSPF:
+
+Анонсируйте ip адреса Fa0/0, Fa0/1 и Loopback 0 в Area 0;
+Проверьте наличие маршрутов OSPF в таблице маршрутизации;
+Проверьте наличие связности всех Loopback адресов со всех маршрутизаторов.
+Выполните необходимую конфигурацию и приложите список сделанных команд для каждого маршрутизатора.
+
+Решение:
+
+R1
+
+interface Loopback0
+ip address 1.1.1.1 255.255.255.0
+ 
+interface FastEthernet0/0
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+
+interface FastEthernet0/1
+ip address 209.45.185.231 255.255.255.0
+no shutdown
+
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+network 209.45.185.0 0.0.0.255 area 0
+network 1.1.1.0 0.0.0.255 area 0
+
+____________________________________________
+
+R2
+
+interface Loopback0
+ip address 2.2.2.2 255.255.255.0
+
+interface FastEthernet0/0
+ip address 192.168.1.2 255.255.255.0
+no shutdown
+
+interface FastEthernet0/1
+ip address 172.16.1.2 255.255.255.0
+
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+network 172.16.1.0 0.0.0.255 area 0
+network 2.2.2.0 0.0.0.255 area 0
+
+_____________________________________________
+
+R3
+
+interface Loopback0
+ip address 3.3.3.3 255.255.255.0
+
+interface FastEthernet0/0
+ip address 192.168.1.3 255.255.255.0
+no shutdown
+
+interface FastEthernet0/1
+ip address 192.168.3.3 255.255.255.0
+no shutdown
+
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+network 192.168.3.0 0.0.0.255 area 0
+network 3.3.3.0 0.0.0.255 area 0
+_____________________________________________
+
+R4
+
+interface Loopback0
+ip address 192.168.40.4 255.255.255.0
+
+interface FastEthernet0/0
+ip address 192.168.1.4 255.255.255.0
+
+interface FastEthernet0/1
+ip address 192.168.4.1 255.255.255.0
+
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+network 192.168.4.0 0.0.0.255 area 0
+network 192.168.40.0 0.0.0.255 area 0
+
+
