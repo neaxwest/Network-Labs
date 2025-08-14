@@ -1,0 +1,40 @@
+Не нашел подходящего оборудования. Хотел собрать для наглядности, обычные свитчи сменил на L3 3650-24PS, роутеры 2911
+
+Но уткнулся в ограничение CPT скорость не больше гигабита, а на схеме есть 10 гигабит.
+
+В планах было искуственно зарезать скорость, пару статей на OpenNet (https://www.opennet.ru/base/cisco/cisco_qos.txt.html) на интерфейсах через Policing примерно так:
+
+Для 1 мбит:
+
+conf t
+class-map match-any LIMIT-CLASS
+match any
+exit
+policy-map LIMIT-1M
+class LIMIT-CLASS
+shape average 1000000 
+exit
+interface GigabitEthernet0/1
+service-policy output LIMIT-1M // Применить к исходящему трафику
+exit
+
+!!! shape average 1000000 - это 1 мбит/с !!!
+
+
+Для 100 мбит, если интерфейс гигабитный:
+
+
+conf t
+class-map match-any LIMIT-CLASS
+match any
+exit
+policy-map LIMIT-100M
+class LIMIT-CLASS
+shape average 100000000
+exit
+interface GigabitEthernet0/1
+service-policy output LIMIT-100M
+exit
+
+
+!!! shape average 100000000 - это 100 Мбит/с (100 миллионов бит)
