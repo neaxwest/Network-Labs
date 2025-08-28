@@ -1,0 +1,23 @@
+en
+conf t
+hostname R4
+
+interface GigabitEthernet0/0/0
+ ip address 10.0.24.1 255.255.255.252
+ no shutdown
+
+interface GigabitEthernet0/0/1
+ ip address 10.0.45.1 255.255.255.252
+ no shutdown
+
+router bgp 400
+ bgp router-id 10.0.45.4
+ bgp log-neighbor-changes
+ no synchronization
+ neighbor 10.0.24.2 remote-as 200
+ neighbor 10.0.45.2 remote-as 300
+ network 10.0.24.0 mask 255.255.255.252
+ network 10.0.45.0 mask 255.255.255.252
+
+end
+wr mem

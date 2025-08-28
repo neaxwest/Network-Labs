@@ -1,0 +1,22 @@
+en
+conf t
+hostname R1
+
+interface GigabitEthernet0/0/0
+ ip address 10.0.12.1 255.255.255.252
+ no shutdown
+
+interface GigabitEthernet0/0/1
+ ip address 10.0.15.1 255.255.255.252
+ no shutdown
+
+router bgp 100
+ bgp log-neighbor-changes
+ no synchronization
+ neighbor 10.0.12.2 remote-as 200
+ neighbor 10.0.15.2 remote-as 300
+ network 10.0.12.0 mask 255.255.255.252
+ network 10.0.15.0 mask 255.255.255.252
+
+end
+wr mem
