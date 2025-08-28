@@ -1,0 +1,52 @@
+en
+conf t
+hostname DLS2
+
+! VLANs
+vlan 10
+vlan 20
+
+! SVI для VLAN10
+interface Vlan10
+ ip address 192.168.10.2 255.255.255.0
+ standby 10 ip 192.168.10.254
+ standby 10 priority 100
+ standby 10 preempt
+ no shutdown
+
+! SVI для VLAN20
+interface Vlan20
+ ip address 192.168.20.2 255.255.255.0
+ standby 20 ip 192.168.20.254
+ standby 20 priority 100
+ standby 20 preempt
+ no shutdown
+
+! Аплинк к Backup
+interface GigabitEthernet1/0/2
+ no switchport
+ ip address 172.16.2.1 255.255.255.252
+ no shutdown
+
+! Транки к Access SW
+interface range GigabitEthernet1/0/3-5
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ no shutdown
+
+! EtherChannel к DLS1
+interface range GigabitEthernet1/0/23-24
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ channel-group 1 mode active
+ no shutdown
+
+interface Port-channel1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ no shutdown
+
+! Default route
+ip route 0.0.0.0 0.0.0.0 172.16.2.2
+end
+wr

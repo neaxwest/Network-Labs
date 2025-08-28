@@ -1,0 +1,18 @@
+en
+conf t
+hostname Access_SW1
+spanning-tree mode rapid-pvst
+
+interface range f0/2-3
+switchport mode access
+switchport access vlan 10
+spanning-tree portfast
+
+! Аплинк
+
+interface f0/24
+switchport mode trunk
+switchport trunk allowed vlan 10,20
+
+end
+wr mem

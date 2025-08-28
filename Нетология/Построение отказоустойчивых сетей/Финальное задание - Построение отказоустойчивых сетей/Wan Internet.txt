@@ -1,0 +1,26 @@
+en
+conf t
+hostname INTERNET
+
+! Лупбек для имитации 8.8.8.8
+int lo0
+ ip address 8.8.8.8 255.255.255.255
+no shutdown
+exit
+
+! Линк к Primary
+int fa0/0
+ ip address 100.0.0.1 255.255.255.252
+no shutdown
+exit
+
+! Линк к Backup
+int fa0/1
+ ip address 200.0.0.1 255.255.255.252
+no shutdown
+exit
+
+! Маршрут по умолчанию
+ip route 0.0.0.0 0.0.0.0 Null0
+end
+wr

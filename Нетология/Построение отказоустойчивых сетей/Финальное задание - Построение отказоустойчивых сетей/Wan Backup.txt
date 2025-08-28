@@ -1,0 +1,33 @@
+en
+conf t
+hostname Backup
+
+! Линк к INTERNET
+int fa0/0
+ ip address 200.0.0.2 255.255.255.252
+ ip nat outside
+no shutdown
+exit
+
+! Линк к DLS2
+int fa0/1
+ ip address 172.16.2.2 255.255.255.252
+ ip nat inside
+no shutdown
+exit
+
+! NAT
+ip nat inside source list NAT interface fa0/0 overload
+
+! Default route в INTERNET
+ip route 0.0.0.0 0.0.0.0 200.0.0.1
+
+! Маршрут к LAN через DLS2
+ip route 192.168.0.0 255.255.0.0 172.16.2.1
+
+! ACL для NAT
+ip access-list extended NAT
+ permit ip 192.168.10.0 0.0.0.255 any
+ permit ip 192.168.20.0 0.0.0.255 any
+end
+wr
