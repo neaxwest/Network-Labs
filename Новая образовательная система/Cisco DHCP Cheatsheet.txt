@@ -1,0 +1,42 @@
+﻿=========================
+ Cisco DHCP Cheatsheet
+=========================
+
+! --- Вариант 1: DHCP работает на L3 устройстве ---
+
+interface Vlan10
+ ip address 192.168.10.1 255.255.255.0
+
+! резервируем адреса (шлюз, принтеры и т.д.)
+ip dhcp excluded-address 192.168.10.1 192.168.10.10   
+
+! создаем пул DHCP для VLAN10
+ip dhcp pool VLAN10
+ network 192.168.10.0 255.255.255.0
+ default-router 192.168.10.1
+ dns-server 8.8.8.8
+
+
+! --- Вариант 2: DHCP-сервер в другой подсети ---
+
+interface Vlan20
+ ip address 192.168.20.1 255.255.255.0
+ ip helper-address 172.16.1.100
+
+! ip helper-address пересылает DHCP broadcast на указанный сервер
+! работает даже если между L3 и сервером стоят L2-свитчи
+
+
+! --- Основные проверки ---
+
+show ip dhcp binding
+! показать список клиентов
+
+show ip dhcp pool
+! посмотреть статистику по пулам
+
+debug ip dhcp server events
+! включить отладку событий DHCP
+
+debug ip dhcp server packet
+! включить отладку пакетов DHCP

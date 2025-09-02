@@ -1,0 +1,47 @@
+﻿========================================================
+🔑 Cisco Privilege Levels Cheatsheet (Enterprise RBAC)
+========================================================
+
+📊 Уровни и роли
+----------------
+Tier 1 Support (NOC) → Privilege 1–5 → Read-only
+ - Команды: ping, show ip interface, show cdp
+ - Без доступа к configure terminal
+
+Audit / Compliance → Privilege 1–5 (через TACACS+)
+ - Только show, выгрузка конфигов
+ - Без изменений
+
+Tier 2 Engineer → Privilege 6–7 → Access-level changes
+ - Команды: configure terminal, interface, switchport
+ - Без ACL и routing
+
+Network Security Engineer → Privilege 7–10
+ - Команды: ip access-list, crypto, aaa, security logs
+
+Tier 3 Senior Engineer / Architect → Privilege 15
+ - Полный доступ: routing, HSRP/VRRP, reload, erase
+
+--------------------------------------------------------
+
+📌 Примеры настройки привилегий
+-------------------------------
+privilege exec level 5 ping
+privilege exec level 5 show
+privilege exec level 7 configure terminal
+privilege exec level 7 interface
+privilege exec level 7 switchport
+privilege exec level 10 ip access-list
+privilege exec level 15 all
+
+--------------------------------------------------------
+
+⚙️ Best Practices
+-----------------
+- Минимизировать использование enable secret (только аварийный доступ)
+- Основной доступ через AAA (TACACS+ / RADIUS)
+- Каждому сотруднику — персональный аккаунт (никаких общих паролей)
+- Все действия логируются (AAA Accounting)
+- Доступ разделяется по зонам: админ датацентра ≠ админ Wi-Fi ≠ WAN
+
+========================================================
