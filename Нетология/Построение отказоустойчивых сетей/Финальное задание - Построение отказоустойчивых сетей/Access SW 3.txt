@@ -11,7 +11,7 @@ spanning-tree portfast
 
 ! Аплинки
 
-interface f0/24
+interface range gi0/1-2
 switchport mode trunk
 switchport trunk allowed vlan 10,20
 
