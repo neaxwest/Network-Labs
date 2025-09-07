@@ -1,0 +1,145 @@
+========================
+==   ВАРИАНТ 1: RIP   ==
+========================
+
+R1:
+hostname R1
+!
+interface FastEthernet0/0
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+!
+interface FastEthernet0/1
+ ip address 10.0.10.1 255.255.255.252
+ no shutdown
+!
+interface FastEthernet0/2
+ ip address 10.0.11.1 255.255.255.252
+ no shutdown
+!
+router rip
+ version 2
+ network 192.168.10.0
+ network 10.0.10.0
+ network 10.0.11.0
+ no auto-summary
+!
+---------------------------------------------------
+R2:
+hostname R2
+!
+interface FastEthernet0/0
+ ip address 192.168.20.1 255.255.255.0
+ no shutdown
+!
+interface FastEthernet0/1
+ ip address 10.0.10.2 255.255.255.252
+ no shutdown
+!
+interface FastEthernet0/2
+ ip address 10.0.11.2 255.255.255.252
+ no shutdown
+!
+router rip
+ version 2
+ network 192.168.20.0
+ network 10.0.10.0
+ network 10.0.11.0
+ no auto-summary
+!
+
+
+=========================
+==   ВАРИАНТ 2: OSPF   ==
+=========================
+
+R1:
+hostname R1
+!
+interface FastEthernet0/0
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+!
+interface FastEthernet0/1
+ ip address 10.0.10.1 255.255.255.252
+ no shutdown
+!
+interface FastEthernet0/2
+ ip address 10.0.11.1 255.255.255.252
+ no shutdown
+!
+router ospf 1
+ network 192.168.10.0 0.0.0.255 area 0
+ network 10.0.10.0 0.0.0.3 area 0
+ network 10.0.11.0 0.0.0.3 area 0
+!
+---------------------------------------------------
+R2:
+hostname R2
+!
+interface FastEthernet0/0
+ ip address 192.168.20.1 255.255.255.0
+ no shutdown
+!
+interface FastEthernet0/1
+ ip address 10.0.10.2 255.255.255.252
+ no shutdown
+!
+interface FastEthernet0/2
+ ip address 10.0.11.2 255.255.255.252
+ no shutdown
+!
+router ospf 1
+ network 192.168.20.0 0.0.0.255 area 0
+ network 10.0.10.0 0.0.0.3 area 0
+ network 10.0.11.0 0.0.0.3 area 0
+!
+
+
+==========================
+==   ВАРИАНТ 3: EIGRP   ==
+==========================
+
+R1:
+hostname R1
+!
+interface FastEthernet0/0
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+!
+interface FastEthernet0/1
+ ip address 10.0.10.1 255.255.255.252
+ no shutdown
+!
+interface FastEthernet0/2
+ ip address 10.0.11.1 255.255.255.252
+ no shutdown
+!
+router eigrp 100
+ network 192.168.10.0 0.0.0.255
+ network 10.0.10.0 0.0.0.3
+ network 10.0.11.0 0.0.0.3
+ no auto-summary
+!
+---------------------------------------------------
+R2:
+hostname R2
+!
+interface FastEthernet0/0
+ ip address 192.168.20.1 255.255.255.0
+ no shutdown
+!
+interface FastEthernet0/1
+ ip address 10.0.10.2 255.255.255.252
+ no shutdown
+!
+interface FastEthernet0/2
+ ip address 10.0.11.2 255.255.255.252
+ no shutdown
+!
+router eigrp 100
+ network 192.168.20.0 0.0.0.255
+ network 10.0.10.0 0.0.0.3
+ network 10.0.11.0 0.0.0.3
+ no auto-summary
+!
