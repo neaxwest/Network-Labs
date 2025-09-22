@@ -1,0 +1,69 @@
+1. Задание №1
+
+! Настраиваем BGP в нашей AS 65001
+router bgp 65001
+neighbor 10.10.10.2 remote-as 200
+neighbor 20.20.20.2 remote-as 300
+
+! Повышаем local-pref для ISP A, чтобы по умолчанию выходить через него
+route-map PREF-A permit 10
+set local-preference 200
+
+! Для ISP B ставим local-pref ниже, чтобы он был резервным
+route-map PREF-B permit 10
+set local-preference 100
+
+! Применяем route-map на входящие маршруты от ISP A
+neighbor 10.10.10.2 route-map PREF-A in
+
+! Применяем route-map на входящие маршруты от ISP B
+neighbor 20.20.20.2 route-map PREF-B in
+
+! Настраиваем prefix-list для анонса только адреса сервера
+ip prefix-list SERVER seq 5 permit 100.100.100.50/32
+
+! Route-map для того, чтобы анонсировать сервер в сторону ISP B
+route-map ANNOUNCE-SERVER permit 10
+match ip address prefix-list SERVER
+
+! Применяем route-map для анонса сервера на соседство с ISP B
+neighbor 20.20.20.2 route-map ANNOUNCE-SERVER out
+
+
+2. Задание №3
+
+router bgp 100
+bgp log-neighbor-changes
+
+! соседство с ISP A
+neighbor 10.10.10.2 remote-as 200
+
+! соседство с ISP B
+neighbor 30.30.30.1 remote-as 300
+
+! применяем route-map к ISP A
+neighbor 10.10.10.2 route-map OUT-TO-ISP-A out
+
+! применяем route-map к ISP B
+neighbor 30.30.30.1 route-map OUT-TO-ISP-B out
+
+! наш PI блок
+ip prefix-list OUR-PI seq 5 permit 100.100.100.0/23
+
+! адрес сервера
+ip prefix-list SERVER seq 5 permit 100.100.100.50/32
+
+! route-map для ISP A, чтобы трафик шёл через него
+route-map OUT-TO-ISP-A permit 10
+match ip address prefix-list OUR-PI
+set community 200:100 additive
+
+! route-map для ISP B, общий трафик — понизить приоритет
+route-map OUT-TO-ISP-B permit 5
+match ip address prefix-list OUR-PI
+set community 300:200 additive
+
+! route-map для ISP B, для сервера — повысить приоритет
+route-map OUT-TO-ISP-B permit 10
+match ip address prefix-list SERVER
+set community 300:100 additive
