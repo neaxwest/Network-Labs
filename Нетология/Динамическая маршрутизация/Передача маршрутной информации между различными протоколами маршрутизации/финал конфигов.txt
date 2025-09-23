@@ -1,0 +1,310 @@
+hostname R1
+
+interface GigabitEthernet0/0
+ip address 10.0.12.1 255.255.255.252
+no shutdown
+! Ћинк к R2
+
+interface GigabitEthernet0/1
+ip address 10.0.14.1 255.255.255.252
+no shutdown
+! Ћинк к R4
+
+interface GigabitEthernet0/2
+ip address 10.0.16.1 255.255.255.252
+no shutdown
+! Ћинк к R6
+
+router ospf 1
+router-id 1.1.1.1
+network 10.0.12.0 0.0.0.3 area 0
+! R1: 10.0.12.1, R2: 10.0.12.2
+network 10.0.14.0 0.0.0.3 area 0
+! R1: 10.0.14.1, R4: 10.0.14.2
+network 10.0.16.0 0.0.0.3 area 5
+! R1: 10.0.16.1, R6: 10.0.16.2
+
+do wr
+
+
+!!!!!!!!!!!!!!!!!
+
+
+hostname R2
+
+interface GigabitEthernet0/0
+ip address 10.0.12.2 255.255.255.252
+no shutdown
+! Ћинк к R1
+
+interface GigabitEthernet0/1
+ip address 10.0.23.1 255.255.255.252
+no shutdown
+! Ћинк к R3
+
+interface GigabitEthernet0/2
+ip address 10.0.28.1 255.255.255.252
+no shutdown
+! Ћинк к R8
+
+router ospf 2
+router-id 2.2.2.2
+network 10.0.12.0 0.0.0.3 area 0
+! R2: 10.0.12.2, R1: 10.0.12.1
+network 10.0.23.0 0.0.0.3 area 0
+! R2: 10.0.23.1, R3: 10.0.23.2
+network 10.0.28.0 0.0.0.3 area 7
+! R2: 10.0.28.1, R8: 10.0.28.2
+area 7 nssa no-summary
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!
+
+hostname R3
+
+interface GigabitEthernet0/0
+ ip address 10.0.23.2 255.255.255.252
+ no shutdown
+! Ћинк к R2
+
+interface GigabitEthernet0/1
+ ip address 10.0.34.1 255.255.255.252
+ no shutdown
+! Ћинк к R4
+
+interface GigabitEthernet0/2
+ ip address 10.0.31.1 255.255.255.252
+ no shutdown
+! Ћинк к R11
+
+router ospf 3
+ router-id 3.3.3.3
+ network 10.0.23.0 0.0.0.3 area 0
+! R3: 10.0.23.2, R2: 10.0.23.1
+ network 10.0.34.0 0.0.0.3 area 0
+! R3: 10.0.34.1, R4: 10.0.34.2
+ network 10.0.31.0 0.0.0.3 area 3
+! R3: 10.0.31.1, R11: 10.0.31.2
+area 3 stub
+
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!!
+
+hostname R4
+
+! »нтерфейсы
+interface GigabitEthernet0/0
+ ip address 10.0.14.2 255.255.255.252
+ no shutdown
+! Ћинк к R1
+
+interface GigabitEthernet0/1
+ ip address 10.0.34.2 255.255.255.252
+ no shutdown
+! Ћинк к R3
+
+interface GigabitEthernet0/2
+ ip address 10.0.45.1 255.255.255.252
+ no shutdown
+! Ћинк к R5 (BGP)
+
+! OSPF
+router ospf 4
+ router-id 4.4.4.4
+ network 10.0.14.0 0.0.0.3 area 0
+ network 10.0.34.0 0.0.0.3 area 0
+redistribute bgp 4444 subnets
+
+! BGP
+router bgp 4444
+neighbor 10.0.45.2 remote-as 5555
+redistribute ospf 4
+
+do wr
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+hostname R5
+!
+interface GigabitEthernet0/0
+ ip address 10.0.45.2 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet0/1
+ ip address 8.8.4.1 255.255.255.0
+ no shutdown
+!
+interface GigabitEthernet0/2
+ ip address 8.8.8.1 255.255.255.0
+ no shutdown
+!
+router bgp 5555
+ neighbor 10.0.45.1 remote-as 4444
+ network 8.8.4.0 mask 255.255.255.0
+ network 8.8.8.0 mask 255.255.255.0
+!
+
+ip route 0.0.0.0 0.0.0.0 10.0.45.1
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+hostname R6
+
+interface GigabitEthernet0/0
+ip address 10.0.16.2 255.255.255.252
+no shutdown
+! Ћинк к R1
+
+interface GigabitEthernet0/1
+ip address 10.0.67.1 255.255.255.252
+no shutdown
+! Ћинк к R7
+
+router ospf 6
+router-id 6.6.6.6
+network 10.0.16.0 0.0.0.3 area 5
+! R6: 10.0.16.2, R1: 10.0.16.1
+network 10.0.67.0 0.0.0.3 area 5
+! R6: 10.0.67.1, R7: 10.0.67.2
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!!!!
+
+
+hostname R7
+
+interface GigabitEthernet0/0
+ip address 10.0.67.2 255.255.255.252
+no shutdown
+! Ћинк к R6
+
+interface GigabitEthernet0/1
+ip address 172.16.1.1 255.255.255.0
+no shutdown
+! LAN1
+
+interface GigabitEthernet0/2
+ip address 172.16.5.1 255.255.255.0
+no shutdown
+! LAN2
+
+router ospf 7
+ router-id 7.7.7.7
+ network 10.0.67.0 0.0.0.3 area 5
+! R7: 10.0.67.2, R6: 10.0.67.1
+ network 172.16.1.0 0.0.0.255 area 5
+! R7: 172.16.1.1
+ network 172.16.5.0 0.0.0.255 area 5
+! R7: 172.16.5.1
+redistribute static subnets
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!!!!
+
+
+hostname R8
+
+interface GigabitEthernet0/0
+ip address 10.0.28.2 255.255.255.252
+no shutdown
+! Ћинк к R2
+
+interface GigabitEthernet0/1
+ip address 10.0.89.1 255.255.255.252
+no shutdown
+! Ћинк к R9
+
+router ospf 8
+router-id 8.8.8.8
+network 10.0.28.0 0.0.0.3 area 7
+! R8: 10.0.28.2, R2: 10.0.28.1
+network 10.0.89.0 0.0.0.3 area 7
+! R8: 10.0.89.1, R9: 10.0.89.2
+area 7 nssa
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!
+
+
+hostname R9
+
+interface GigabitEthernet0/0
+ip address 10.0.89.2 255.255.255.252
+no shutdown
+! Ћинк к R8
+
+interface GigabitEthernet0/1
+ip address 172.16.2.1 255.255.255.0
+no shutdown
+! LAN1
+
+interface GigabitEthernet0/2
+ip address 172.16.7.1 255.255.255.0
+no shutdown
+! LAN2
+
+router ospf 9
+router-id 9.9.9.9
+network 10.0.89.0 0.0.0.3 area 7
+! R9: 10.0.89.2, R8: 10.0.89.1
+network 172.16.1.0 0.0.0.255 area 7
+! R9: 172.16.1.1
+network 172.16.7.0 0.0.0.255 area 7
+! R9: 172.16.7.1
+area 7 nssa
+redistribute static subnets
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+hostname R10
+
+interface GigabitEthernet0/0
+ip address 10.0.110.2 255.255.255.252
+no shutdown
+! Ћинк к R11
+
+router ospf 10
+router-id 10.10.10.10
+network 10.0.110.0 0.0.0.3 area 3
+! R10: 10.0.110.2, R11: 10.0.110.1
+
+do wr
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+hostname R11
+
+interface GigabitEthernet0/0/0
+ip address 10.0.31.2 255.255.255.252
+no shutdown
+! Ћинк к R3
+
+interface GigabitEthernet0/0/1
+ip address 10.0.110.1 255.255.255.252
+no shutdown
+! Ћинк к R10
+
+router ospf 11
+router-id 11.11.11.11
+network 10.0.31.0 0.0.0.3 area 3
+! R11: 10.0.31.2, R3: 10.0.31.1
+network 10.0.110.0 0.0.0.3 area 3
+! R11: 10.0.110.1, R10: 10.0.110.2
+area 3 stub no-summary
+
+do wr
+
