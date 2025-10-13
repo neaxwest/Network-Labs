@@ -1,0 +1,47 @@
+!!!!!!!!! Ubuntu Server !!!!!!
+
+1. Сеть
+
+nano / vi
+/etc/netplan/01-netcfg.yaml
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: no
+      addresses: [192.168.3.2/24]
+      gateway4: 192.168.3.1
+      nameservers:
+        addresses: [8.8.8.8]
+
+netplan apply
+
+2. Web Server старт
+
+python3 -m http.server 80
+
+
+!!!!!!!!!!!!! Kali Linux !!!!!!!!!!!!!!!
+
+1. Сеть
+
+ip a
+
+nano / vi
+etc/network/interfaces
+
+auto eth0
+iface eth0 inet static
+address 192.168.1.4
+netmask 255.255.255.0
+gateway 192.168.1.1
+dns-nameserver 8.8.8.8
+
+systemctl stop networking
+systemctl start networking
+
+2. Проверка Web на Ubuntu srv
+
+curl http://192.168.3.2

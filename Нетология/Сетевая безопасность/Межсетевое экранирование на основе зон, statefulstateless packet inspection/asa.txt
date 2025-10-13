@@ -1,0 +1,146 @@
+! === Базовые параметры ===
+hostname ASAv-LAB
+! Устанавливаем пароль enable
+enable secret 123456
+! Устанавливаем часовой пояс
+clock timezone CET 1 0
+
+! === Интерфейсы и зоны безопасности ===
+interface GigabitEthernet0/0
+ nameif printer
+ security-level 30
+ ip address 192.168.2.1 255.255.255.0
+ no shut
+! Интерфейс для принтера
+
+interface GigabitEthernet0/1
+ nameif dmz
+ security-level 50
+ ip address 192.168.3.1 255.255.255.0
+ no shut
+! Интерфейс для DMZ
+
+interface GigabitEthernet0/2
+ nameif inside
+ security-level 100
+ ip address 192.168.1.1 255.255.255.0
+ no shut
+! Внутренний интерфейс (Inside)
+
+interface GigabitEthernet0/3
+ nameif outside
+ security-level 0
+ ip address 10.10.10.1 255.255.255.0
+ no shut
+! Внешний интерфейс (Outside)
+
+interface GigabitEthernet0/4
+ shutdown     
+ no nameif    
+ no security-level
+ no ip address
+! Неиспользуемый интерфейс
+
+interface GigabitEthernet0/5
+ shutdown     
+ no nameif    
+ no security-level
+ no ip address
+! Неиспользуемый интерфейс
+
+interface GigabitEthernet0/6
+ shutdown     
+ no nameif    
+ no security-level
+ no ip address
+! Неиспользуемый интерфейс
+
+! === NAT: отключаем для всех зон ===
+object network NO_NAT_ALL
+ subnet 0.0.0.0 0.0.0.0
+! Объект сети для отключения NAT
+
+nat (inside,outside) source static NO_NAT_ALL NO_NAT_ALL no-proxy-arp
+! NAT отключен для Inside -> Outside
+
+nat (inside,dmz) source static NO_NAT_ALL NO_NAT_ALL no-proxy-arp
+! NAT отключен для Inside -> DMZ
+
+nat (dmz,outside) source static NO_NAT_ALL NO_NAT_ALL no-proxy-arp
+! NAT отключен для DMZ -> Outside
+
+nat (printer,inside) source static NO_NAT_ALL NO_NAT_ALL no-proxy-arp
+! NAT отключен для Printer -> Inside
+
+! === Политика инспекции (ICMP) ===
+policy-map global_policy
+ class inspection_default
+  inspect icmp
+! Включаем инспекцию ICMP
+service-policy global_policy global
+! Применяем глобальную политику
+
+! === ACLs ===
+
+! === INSIDE -> другие зоны ===
+access-list INSIDE_IN extended permit icmp any any
+! Разрешаем ICMP Inside -> Outside
+
+access-list INSIDE_IN extended permit tcp any host 192.168.3.2 eq 80
+! Разрешаем HTTP Inside -> DMZ
+
+access-list INSIDE_IN extended deny icmp any host 192.168.3.2
+! Блокируем ICMP Inside -> DMZ
+
+access-list INSIDE_IN extended permit icmp any host 192.168.2.2
+! Разрешаем ICMP Inside -> Printer
+
+access-list INSIDE_IN extended deny tcp any host 192.168.2.2
+! Блокируем TCP Inside -> Printer
+
+access-list INSIDE_IN extended permit icmp any host 10.10.10.2
+access-list INSIDE_IN extended permit icmp any host 10.10.10.3
+! Разрешаем ICMP Inside -> Outside (точечные хосты)
+
+access-list INSIDE_IN extended deny ip any any
+! Блокируем все остальное
+
+access-group INSIDE_IN in interface inside
+! Применяем ACL к интерфейсу Inside
+
+! === OUTSIDE -> ASA ===
+access-list OUTSIDE_IN extended permit tcp any host 192.168.3.2 eq 80
+! Разрешаем HTTP Outside -> DMZ
+
+access-list OUTSIDE_IN extended deny ip any 192.168.1.0 255.255.255.0
+access-list OUTSIDE_IN extended deny ip any 192.168.2.0 255.255.255.0
+! Блокируем доступ Outside -> Inside/Printer
+
+access-group OUTSIDE_IN in interface outside
+! Применяем ACL к интерфейсу Outside
+
+! === DMZ -> ASA ===
+access-list DMZ_IN extended permit icmp any host 10.10.10.2
+access-list DMZ_IN extended permit icmp any host 10.10.10.3
+! Разрешаем ICMP DMZ -> Outside
+
+access-list DMZ_IN extended deny ip any 192.168.1.0 255.255.255.0
+access-list DMZ_IN extended deny ip any 192.168.2.0 255.255.255.0
+! Блокируем DMZ -> Inside/Printer
+
+access-group DMZ_IN in interface dmz
+! Применяем ACL к интерфейсу DMZ
+
+! === PRINTER -> ASA ===
+access-list PRINTER_IN extended permit icmp host 192.168.2.2 192.168.1.0 255.255.255.0 echo-reply
+! Разрешаем только ICMP echo-reply от Printer -> Inside
+
+access-list PRINTER_IN extended deny ip any any
+! Блокируем любой другой исходящий трафик
+
+access-group PRINTER_IN in interface printer
+! Применяем ACL к интерфейсу Printer
+
+! === Сохраняем конфигурацию ===
+write memory
+! Сохраняем конфигурацию в память
