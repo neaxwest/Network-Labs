@@ -1,0 +1,35 @@
+﻿1. Слишком широкое правило. из inside можно пинговать только outside и printer
+
+2. Это правило выше остальных, весь траффик кроме icmp будет отброшен
+
+access-list INSIDE_IN extended deny ip any any log
+
+решение 1 и 2: переписать правила на более узкие и передобавить в нужной последовательности
+
+no access-list INSIDE_IN
+access-list INSIDE_IN extended permit icmp any 10.10.10.0 255.255.255.0
+access-list INSIDE_IN extended permit icmp any 192.168.2.0 255.255.255.0
+access-list INSIDE_IN extended permit tcp any 192.168.3.0 255.255.255.0 eq www
+access-list INSIDE_IN extended deny ip any any log
+
+Если бы остальные правила были корректны, можно было бы одно правило убрать и передобавить 
+и на основании этого последнее добавленное правило в конце, proffit
+
+
+3. Верно, но необязательно
+
+access-list OUTSIDE_IN extended permit ip any any
+
+решение: убираем для безопасности
+
+no access-list OUTSIDE_IN extended permit ip any any
+
+4. Верно, но необязательно
+
+access-list DMZ_IN extended permit ip any any
+
+решение: убираем для безопасности
+
+no access-list DMZ_IN extended permit ip any any
+
+
