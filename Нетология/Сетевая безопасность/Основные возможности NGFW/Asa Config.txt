@@ -1,0 +1,127 @@
+! ===============================
+! Базовая настройка интерфейсов
+! ===============================
+
+hostname ASA0
+enable password ciscocisco
+
+! Интерфейс outside — Server0
+interface GigabitEthernet0/0
+ nameif outside
+ security-level 0
+ ip address 192.168.30.1 255.255.255.0
+ no shutdown
+
+! Интерфейс inside_pc0 — PC0 (CentOS)
+interface GigabitEthernet0/1
+ nameif inside_pc0
+ security-level 100
+ ip address 192.168.0.1 255.255.255.0
+ no shutdown
+
+! Интерфейс inside_pc1 — PC1 (Debian)
+interface GigabitEthernet0/2
+ nameif inside_pc1
+ security-level 100
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+
+! Интерфейс inside_pc2 — PC2 (RHEL)
+interface GigabitEthernet0/3
+ nameif inside_pc2
+ security-level 100
+ ip address 192.168.20.1 255.255.255.0
+ no shutdown
+
+! ===============================
+! Маршрутизация
+! ===============================
+route outside 0.0.0.0 0.0.0.0 192.168.30.2
+
+! ===============================
+! ACL для PC0 CENTOS
+! ===============================
+access-list ACL_PC0 extended deny tcp 192.168.0.0 255.255.255.0 192.168.30.0 255.255.255.0 eq www
+access-list ACL_PC0 extended deny udp 192.168.0.0 255.255.255.0 192.168.30.0 255.255.255.0 eq domain
+access-list ACL_PC0 extended permit tcp 192.168.0.0 255.255.255.0 192.168.30.0 255.255.255.0 eq ftp
+
+
+access-group ACL_PC0 in interface inside_pc0
+
+! ===============================
+! ACL для PC1 DEBIAN
+! ===============================
+access-list ACL_PC1 extended deny tcp 192.168.10.0 255.255.255.0 192.168.30.0 255.255.255.0 eq ftp
+access-list ACL_PC1 extended deny udp 192.168.10.0 255.255.255.0 192.168.30.0 255.255.255.0 eq domain
+access-list ACL_PC1 extended permit tcp 192.168.10.0 255.255.255.0 192.168.30.0 255.255.255.0 eq www
+access-group ACL_PC1 in interface inside_pc1
+
+! ===============================
+! ACL для PC2 RHEL
+! ===============================
+access-list ACL_PC2 extended deny tcp 192.168.20.0 255.255.255.0 192.168.30.0 255.255.255.0 eq ftp
+access-list ACL_PC2 extended deny tcp 192.168.20.0 255.255.255.0 192.168.30.0 255.255.255.0 eq www
+access-list ACL_PC2 extended permit udp 192.168.20.0 255.255.255.0 192.168.30.0 255.255.255.0 eq domain
+access-group ACL_PC2 in interface inside_pc2
+
+! ===============================
+! ACL для Server0 (внешний интерфейс)
+! ===============================
+access-list ACL_SERVER extended permit tcp 192.168.30.0 255.255.255.0 any eq www
+access-list ACL_SERVER extended permit udp 192.168.30.0 255.255.255.0 any eq domain
+access-list ACL_SERVER extended permit tcp 192.168.30.0 255.255.255.0 any eq ftp
+access-list ACL_SERVER extended permit icmp 192.168.30.0 255.255.255.0 any
+access-group ACL_SERVER in interface outside
+
+! ===============================
+Создание Class-map для каждого ПК
+match access-list <имя> — связывает класс с ACL, по которому будет инспекция.
+! ===============================
+
+! PC0
+class-map PC0_CLASS
+match access-list ACL_PC0
+exit
+
+! PC1
+class-map PC1_CLASS
+match access-list ACL_PC1
+exit
+
+! PC2
+class-map PC2_CLASS
+match access-list ACL_PC2
+exit
+
+! ===============================
+Создание Policy-map
+inspect <protocol> — включает инспекцию на уровне приложения.
+Можно добавлять несколько инспекций для одного класса.
+Для ICMP используем просто inspect icmp. Для DNS — inspect dns.
+! ===============================
+
+policy-map GLOBAL_POLICY
+class PC0_CLASS
+inspect ftp
+exit
+class PC1_CLASS
+inspect http
+exit
+class PC2_CLASS
+inspect dns
+exit
+
+! ===============================
+! Применение политики
+После этого ASA будет инспектировать разрешённый трафик на уровне приложений и блокировать/логировать все запрещённые соединения в соответствии с ACL.
+! ===============================
+
+service-policy GLOBAL_POLICY global
+
+! ===============================
+! Конец конфигурации
+! ===============================
+write memory
+
+
+

@@ -1,0 +1,166 @@
+﻿1. Настройка сети Rhel
+
+nano /etc/sysconfig/network-scripts/ifcfg-ens3
+
+TYPE=Ethernet
+BOOTPROTO=none
+NAME=eth0
+DEVICE=eth0
+ONBOOT=yes
+IPADDR=192.168.20.2
+PREFIX=24
+GATEWAY=192.168.20.1
+DNS1=8.8.8.8
+
+systemctl restart NetworkManager
+
+либо
+
+nmcli device disconnect ens3
+nmcli device connect ens3
+
+Проверка статуса и IP
+
+ip a
+nmcli device status
+nmcli con show
+
+Просмотр конфигурации интерфейса ens3:
+sudo cat /etc/NetworkManager/system-connections/static-ens3.nmconnection
+
+2. Настройка сети Centos 
+
+sudo nmcli con add type ethernet ifname ens3 con-name static-ens3 ipv4.addresses 192.168.0.2/24 ipv4.gateway 192.168.0.1 ipv4.dns 8.8.8.8 ipv4.method manual
+sudo nmcli con up static-ens3
+
+Проверка статуса и IP
+
+ip a
+nmcli device status
+nmcli con show
+
+3. Настройка сети Debian
+
+sudo nmcli con add type ethernet ifname ens3 con-name static-ens3 ipv4.addresses 192.168.10.2/24 ipv4.gateway 192.168.10.1 ipv4.dns 8.8.8.8 ipv4.method manual
+sudo nmcli con up static-ens3
+
+Проверка статуса и IP
+
+ip a
+nmcli device status
+nmcli con show
+
+
+4. Настройка сети Linux Server
+
+nano / vi
+/etc/netplan/01-netcfg.yaml
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: no
+      addresses: [192.168.30.2/24]
+      gateway4: 192.168.30.1
+      nameservers:
+        addresses: [8.8.8.8]
+
+netplan apply
+
+5. Web Server старт
+
+python3 -m http.server 80
+
+!!! Проверка Web на Ubuntu srv
+
+🧩 1. Проверка работы HTTP / HTTPS
+curl -I http://192.168.30.2
+curl -I https://192.168.30.2
+wget --spider http://192.168.30.2
+wget --spider https://192.168.30.2
+
+💡 Ключ -I запрашивает только заголовки (HEAD-запрос),
+--spider проверяет доступность, не скачивая файл.
+
+👉 Если порт закрыт или ACL блокирует — увидишь Connection timed out или Connection refused.
+
+🌐 2. Проверка работы DNS (порт 53, UDP/TCP)
+
+Включаем прослушивание порта DNS сервера
+nc -u -l 53
+
+
+Проверяем:
+nc -u -v -z 192.168.30.2 53
+
+
+dig @192.168.30.2 google.com
+nslookup google.com 192.168.30.2
+
+Если DNS работает — получишь IP-ответ в секции ANSWER SECTION.
+
+Если ACL или маршрут блокирует — будет сообщение:
+;; connection timed out; no servers could be reached
+
+📦 3. Проверка работы FTP (порт 21, TCP)
+
+Включаем прослушивание порта FTP на сервере:
+sudo nc -l 21
+
+Проверяем, доступен ли FTP-сервер:
+ftp 192.168.30.2
+
+Если FTP не установлен:
+sudo apt install ftp -y
+ftp 192.168.30.2
+
+Либо проверяем через
+nc -vz 192.168.30.2 21
+
+
+💡 При успешном соединении:
+Connected to 192.168.30.2.
+220 (vsFTPd 3.0.3)
+Name (192.168.30.2:user):
+
+Если блокируется ACL:
+ftp: connect: Connection timed out
+
+🛰️ 4. Проверка ICMP (ping)
+ping -c 4 192.168.30.2
+
+
+💡 Если ACL разрешает ICMP → ответы идут:
+64 bytes from 192.168.30.2: icmp_seq=1 ttl=63 time=1.2 ms
+
+Если нет — будет:
+Destination Host Unreachable
+
+или
+Request timed out
+
+🔌 5. Проверка любого TCP/UDP порта
+
+Для диагностики любого сервиса (если не уверен, что слушает):
+nc -vz 192.168.30.2 21     # FTP
+nc -vz 192.168.30.2 80     # HTTP
+nc -vz 192.168.30.2 443    # HTTPS
+
+✅ Если ASA разрешает трафик до этого IP и порта, и маршрут есть — увидишь:
+Connection to 192.168.30.2 80 port [tcp/http] succeeded!
+
+❌ Если ACL блокирует — timed out
+
+❌ Если маршрута нет — Network is unreachable
+
+Проверка UDP-портов (DNS и др.)
+
+nc -vz -u 192.168.30.2 53   # DNS (UDP)
+
+💡 UDP в nc не всегда даёт чёткий ответ (потому что это безответный протокол),
+но если ASA или маршрут блокирует, часто будет видно “connection refused” или “no route”.
+
+6. Установка сервисов через бридж-интернет
+sudo apt install -y net-tools curl wget iputils-ping ftp vsftpd bind9 apache2
