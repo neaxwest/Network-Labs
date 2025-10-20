@@ -1,32 +1,32 @@
-! ===============================
-! Базовая настройка интерфейсов
+п»ї! ===============================
+! Р‘Р°Р·РѕРІР°СЏ РЅР°СЃС‚СЂРѕР№РєР° РёРЅС‚РµСЂС„РµР№СЃРѕРІ
 ! ===============================
 
 hostname ASA0
 enable password ciscocisco
 
-! Интерфейс outside — Server0
+! РРЅС‚РµСЂС„РµР№СЃ outside вЂ” Server0
 interface GigabitEthernet0/0
 nameif outside
 security-level 0
 ip address 192.168.30.1 255.255.255.0
 no shutdown
 
-! Интерфейс inside_pc0 — PC0 (CentOS)
+! РРЅС‚РµСЂС„РµР№СЃ inside_pc0 вЂ” PC0 (CentOS)
 interface GigabitEthernet0/1
 nameif inside_pc0
 security-level 100
 ip address 192.168.0.1 255.255.255.0
 no shutdown
 
-! Интерфейс inside_pc1 — PC1 (Debian)
+! РРЅС‚РµСЂС„РµР№СЃ inside_pc1 вЂ” PC1 (Debian)
 interface GigabitEthernet0/2
 nameif inside_pc1
 security-level 100
 ip address 192.168.10.1 255.255.255.0
 no shutdown
 
-! Интерфейс inside_pc2 — PC2 (RHEL)
+! РРЅС‚РµСЂС„РµР№СЃ inside_pc2 вЂ” PC2 (RHEL)
 interface GigabitEthernet0/3
 nameif inside_pc2
 security-level 100
@@ -34,12 +34,12 @@ ip address 192.168.20.1 255.255.255.0
 no shutdown
 
 ! ===============================
-! Маршрутизация
+! РњР°СЂС€СЂСѓС‚РёР·Р°С†РёСЏ
 ! ===============================
 route outside 0.0.0.0 0.0.0.0 192.168.30.2
 
 ! ===============================
-! ACL для PC0 CENTOS
+! ACL РґР»СЏ PC0 CENTOS
 ! ===============================
 access-list ACL_PC0 extended deny tcp 192.168.0.0 255.255.255.0 192.168.30.0 255.255.255.0 eq www
 access-list ACL_PC0 extended deny udp 192.168.0.0 255.255.255.0 192.168.30.0 255.255.255.0 eq domain
@@ -49,7 +49,7 @@ access-list ACL_PC0 extended permit tcp 192.168.0.0 255.255.255.0 192.168.30.0 2
 access-group ACL_PC0 in interface inside_pc0
 
 ! ===============================
-! ACL для PC1 DEBIAN
+! ACL РґР»СЏ PC1 DEBIAN
 ! ===============================
 access-list ACL_PC1 extended deny tcp 192.168.10.0 255.255.255.0 192.168.30.0 255.255.255.0 eq ftp
 access-list ACL_PC1 extended deny udp 192.168.10.0 255.255.255.0 192.168.30.0 255.255.255.0 eq domain
@@ -57,7 +57,7 @@ access-list ACL_PC1 extended permit tcp 192.168.10.0 255.255.255.0 192.168.30.0 
 access-group ACL_PC1 in interface inside_pc1
 
 ! ===============================
-! ACL для PC2 RHEL
+! ACL РґР»СЏ PC2 RHEL
 ! ===============================
 access-list ACL_PC2 extended deny tcp 192.168.20.0 255.255.255.0 192.168.30.0 255.255.255.0 eq ftp
 access-list ACL_PC2 extended deny tcp 192.168.20.0 255.255.255.0 192.168.30.0 255.255.255.0 eq www
@@ -65,7 +65,7 @@ access-list ACL_PC2 extended permit udp 192.168.20.0 255.255.255.0 192.168.30.0 
 access-group ACL_PC2 in interface inside_pc2
 
 ! ===============================
-! ACL для Server0 (внешний интерфейс)
+! ACL РґР»СЏ Server0 (РІРЅРµС€РЅРёР№ РёРЅС‚РµСЂС„РµР№СЃ)
 ! ===============================
 access-list ACL_SERVER extended permit tcp 192.168.30.0 255.255.255.0 any eq www
 access-list ACL_SERVER extended permit udp 192.168.30.0 255.255.255.0 any eq domain
@@ -74,8 +74,8 @@ access-list ACL_SERVER extended permit icmp 192.168.30.0 255.255.255.0 any
 access-group ACL_SERVER in interface outside
 
 ! ===============================
-Создание Class-map для каждого ПК
-match access-list имя — связывает класс с ACL, по которому будет инспекция.
+РЎРѕР·РґР°РЅРёРµ Class-map РґР»СЏ РєР°Р¶РґРѕРіРѕ РџРљ
+match access-list РёРјСЏ вЂ” СЃРІСЏР·С‹РІР°РµС‚ РєР»Р°СЃСЃ СЃ ACL, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ Р±СѓРґРµС‚ РёРЅСЃРїРµРєС†РёСЏ.
 ! ===============================
 
 ! PC0
@@ -94,10 +94,10 @@ match access-list ACL_PC2
 exit
 
 ! ===============================
-Создание Policy-map
-inspect protocol — включает инспекцию на уровне приложения.
-Можно добавлять несколько инспекций для одного класса.
-Для ICMP используем просто inspect icmp. Для DNS — inspect dns.
+РЎРѕР·РґР°РЅРёРµ Policy-map
+inspect protocol вЂ” РІРєР»СЋС‡Р°РµС‚ РёРЅСЃРїРµРєС†РёСЋ РЅР° СѓСЂРѕРІРЅРµ РїСЂРёР»РѕР¶РµРЅРёСЏ.
+РњРѕР¶РЅРѕ РґРѕР±Р°РІР»СЏС‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ РёРЅСЃРїРµРєС†РёР№ РґР»СЏ РѕРґРЅРѕРіРѕ РєР»Р°СЃСЃР°.
+Р”Р»СЏ ICMP РёСЃРїРѕР»СЊР·СѓРµРј РїСЂРѕСЃС‚Рѕ inspect icmp. Р”Р»СЏ DNS вЂ” inspect dns.
 ! ===============================
 
 policy-map GLOBAL_POLICY
@@ -112,14 +112,14 @@ inspect dns
 exit
 
 ! ===============================
-! Применение политики
-После этого ASA будет инспектировать разрешённый трафик на уровне приложений и блокировать/логировать все запрещённые соединения в соответствии с ACL.
+! РџСЂРёРјРµРЅРµРЅРёРµ РїРѕР»РёС‚РёРєРё
+РџРѕСЃР»Рµ СЌС‚РѕРіРѕ ASA Р±СѓРґРµС‚ РёРЅСЃРїРµРєС‚РёСЂРѕРІР°С‚СЊ СЂР°Р·СЂРµС€С‘РЅРЅС‹Р№ С‚СЂР°С„РёРє РЅР° СѓСЂРѕРІРЅРµ РїСЂРёР»РѕР¶РµРЅРёР№ Рё Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ/Р»РѕРіРёСЂРѕРІР°С‚СЊ РІСЃРµ Р·Р°РїСЂРµС‰С‘РЅРЅС‹Рµ СЃРѕРµРґРёРЅРµРЅРёСЏ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ ACL.
 ! ===============================
 
 service-policy GLOBAL_POLICY global
 
 ! ===============================
-! Конец конфигурации
+! РљРѕРЅРµС† РєРѕРЅС„РёРіСѓСЂР°С†РёРё
 ! ===============================
 write memory
 
