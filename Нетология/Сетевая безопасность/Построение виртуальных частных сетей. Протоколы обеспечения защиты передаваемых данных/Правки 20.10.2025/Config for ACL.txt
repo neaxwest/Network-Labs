@@ -1,0 +1,72 @@
+______________#R1
+
+hostname R1
+!
+interface fa0/0
+ ip address 192.168.5.1 255.255.255.0
+ no shutdown
+ ip access-group USER-TRAFFIC in
+!
+interface fa0/1
+ ip address 100.0.0.1 255.255.255.0
+ no shutdown
+!
+ip access-list extended USER-TRAFFIC
+ permit ip 192.168.5.0 0.0.0.255 172.16.1.0 0.0.0.255
+ permit ip 192.168.5.0 0.0.0.255 10.10.10.0 0.0.0.255
+ deny ip any any log
+!
+ip route 172.16.1.0 255.255.255.0 100.0.0.2
+ip route 10.10.10.0 255.255.255.0 100.0.0.3
+!
+end
+write
+
+
+______________#R2
+hostname R2
+!
+interface fa0/0
+ ip address 172.16.1.1 255.255.255.0
+ no shutdown
+ ip access-group USER-TRAFFIC in
+!
+interface fa0/1
+ ip address 100.0.0.2 255.255.255.0
+ no shutdown
+!
+ip access-list extended USER-TRAFFIC
+ permit ip 172.16.1.0 0.0.0.255 192.168.5.0 0.0.0.255
+ permit ip 172.16.1.0 0.0.0.255 10.10.10.0 0.0.0.255
+ deny ip any any log
+!
+ip route 192.168.5.0 255.255.255.0 100.0.0.1
+ip route 10.10.10.0 255.255.255.0 100.0.0.3
+!
+end
+write
+
+
+______________#R3
+hostname R3
+!
+interface fa0/0
+ ip address 10.10.10.1 255.255.255.0
+ no shutdown
+ ip access-group USER-TRAFFIC in
+!
+interface fa0/1
+ ip address 100.0.0.3 255.255.255.0
+ no shutdown
+!
+ip access-list extended USER-TRAFFIC
+ permit ip 10.10.10.0 0.0.0.255 192.168.5.0 0.0.0.255
+ permit ip 10.10.10.0 0.0.0.255 172.16.1.0 0.0.0.255
+ deny ip any any log
+!
+ip route 192.168.5.0 255.255.255.0 100.0.0.1
+ip route 172.16.1.0 255.255.255.0 100.0.0.2
+!
+end
+write
+

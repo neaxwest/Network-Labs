@@ -1,0 +1,101 @@
+GRE_Config 
+
+__________________#R1
+
+hostname R1
+
+!
+interface Fa0/0
+ ip address 192.168.5.1 255.255.255.0
+ no shutdown
+!
+interface Fa0/1
+ ip address 100.0.0.1 255.255.255.0
+ no shutdown
+!
+interface Loopback1
+ ip address 10.255.12.1 255.255.255.0
+ no shutdown
+!
+interface Tunnel0
+ ip address 10.255.100.1 255.255.255.252
+ tunnel source 100.0.0.1
+ tunnel destination 100.0.0.2
+ no shutdown
+!
+interface Tunnel1
+ ip address 10.255.101.1 255.255.255.252
+ tunnel source 100.0.0.1
+ tunnel destination 100.0.0.3
+ no shutdown
+!
+! Правильные маршруты через туннели 
+ip route 172.16.1.0 255.255.255.0 10.255.100.2
+ip route 10.10.10.0 255.255.255.0 10.255.101.2
+!
+end
+write
+
+_____________#R2
+
+
+hostname R2
+
+!
+interface Fa0/0
+ ip address 100.0.0.2 255.255.255.0
+ no shutdown
+!
+interface Fa0/1
+ ip address 172.16.1.1 255.255.255.0
+ no shutdown
+!
+interface Loopback1
+ ip address 10.255.12.2 255.255.255.0
+ no shutdown
+!
+interface Tunnel0
+ ip address 10.255.100.2 255.255.255.252
+ tunnel source 100.0.0.2
+ tunnel destination 100.0.0.1
+ no shutdown
+!
+! Правильные маршруты через туннель
+ip route 192.168.5.0 255.255.255.0 10.255.100.1
+ip route 10.10.10.0 255.255.255.0 10.255.100.1
+!
+end
+write
+
+
+_________________________#R3
+
+hostname R3
+
+!
+interface Fa0/0
+ ip address 100.0.0.3 255.255.255.0
+ no shutdown
+!
+interface Fa0/1
+ ip address 10.10.10.1 255.255.255.0
+ no shutdown
+!
+interface Loopback1
+ ip address 10.255.13.2 255.255.255.0
+ no shutdown
+!
+interface Tunnel0
+ ip address 10.255.101.2 255.255.255.252
+ tunnel source 100.0.0.3
+ tunnel destination 100.0.0.1
+ no shutdown
+!
+! Правильные маршруты через туннель
+ip route 192.168.5.0 255.255.255.0 10.255.101.1
+ip route 172.16.1.0 255.255.255.0 10.255.101.1
+!
+end
+write
+
+
