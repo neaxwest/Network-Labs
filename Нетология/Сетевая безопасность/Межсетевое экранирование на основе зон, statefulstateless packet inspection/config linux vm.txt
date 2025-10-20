@@ -1,6 +1,6 @@
-!!!!!!!!! Ubuntu Server !!!!!!
+п»ї!!!!!!!!! Ubuntu Server !!!!!!
 
-1. Сеть
+1. РЎРµС‚СЊ
 
 nano / vi
 /etc/netplan/01-netcfg.yaml
@@ -18,14 +18,14 @@ network:
 
 netplan apply
 
-2. Web Server старт
+2. Web Server СЃС‚Р°СЂС‚
 
 python3 -m http.server 80
 
 
 !!!!!!!!!!!!! Kali Linux !!!!!!!!!!!!!!!
 
-1. Сеть
+1. РЎРµС‚СЊ
 
 ip a
 
@@ -42,6 +42,6 @@ dns-nameserver 8.8.8.8
 systemctl stop networking
 systemctl start networking
 
-2. Проверка Web на Ubuntu srv
+2. РџСЂРѕРІРµСЂРєР° Web РЅР° Ubuntu srv
 
 curl http://192.168.3.2

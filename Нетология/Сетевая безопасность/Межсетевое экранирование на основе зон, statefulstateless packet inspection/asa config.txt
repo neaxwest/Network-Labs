@@ -1,4 +1,4 @@
-! hostname и базовые настройки
+﻿! hostname и базовые настройки
 hostname ASAv-LAB
 enable password YOUR_PASSWORD pbkdf2
 names
