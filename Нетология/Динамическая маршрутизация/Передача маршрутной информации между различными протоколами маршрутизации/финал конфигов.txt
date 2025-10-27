@@ -1,19 +1,19 @@
-hostname R1
+ï»¿hostname R1
 
 interface GigabitEthernet0/0
 ip address 10.0.12.1 255.255.255.252
 no shutdown
-! Ëèíê ê R2
+! Ğ›Ğ¸Ğ½Ğº Ğº R2
 
 interface GigabitEthernet0/1
 ip address 10.0.14.1 255.255.255.252
 no shutdown
-! Ëèíê ê R4
+! Ğ›Ğ¸Ğ½Ğº Ğº R4
 
 interface GigabitEthernet0/2
 ip address 10.0.16.1 255.255.255.252
 no shutdown
-! Ëèíê ê R6
+! Ğ›Ğ¸Ğ½Ğº Ğº R6
 
 router ospf 1
 router-id 1.1.1.1
@@ -35,17 +35,17 @@ hostname R2
 interface GigabitEthernet0/0
 ip address 10.0.12.2 255.255.255.252
 no shutdown
-! Ëèíê ê R1
+! Ğ›Ğ¸Ğ½Ğº Ğº R1
 
 interface GigabitEthernet0/1
 ip address 10.0.23.1 255.255.255.252
 no shutdown
-! Ëèíê ê R3
+! Ğ›Ğ¸Ğ½Ğº Ğº R3
 
 interface GigabitEthernet0/2
 ip address 10.0.28.1 255.255.255.252
 no shutdown
-! Ëèíê ê R8
+! Ğ›Ğ¸Ğ½Ğº Ğº R8
 
 router ospf 2
 router-id 2.2.2.2
@@ -66,17 +66,17 @@ hostname R3
 interface GigabitEthernet0/0
  ip address 10.0.23.2 255.255.255.252
  no shutdown
-! Ëèíê ê R2
+! Ğ›Ğ¸Ğ½Ğº Ğº R2
 
 interface GigabitEthernet0/1
  ip address 10.0.34.1 255.255.255.252
  no shutdown
-! Ëèíê ê R4
+! Ğ›Ğ¸Ğ½Ğº Ğº R4
 
 interface GigabitEthernet0/2
  ip address 10.0.31.1 255.255.255.252
  no shutdown
-! Ëèíê ê R11
+! Ğ›Ğ¸Ğ½Ğº Ğº R11
 
 router ospf 3
  router-id 3.3.3.3
@@ -95,21 +95,21 @@ do wr
 
 hostname R4
 
-! Èíòåğôåéñû
+! Ğ˜Ğ½Ñ‚ĞµÑ€Ñ„ĞµĞ¹ÑÑ‹
 interface GigabitEthernet0/0
  ip address 10.0.14.2 255.255.255.252
  no shutdown
-! Ëèíê ê R1
+! Ğ›Ğ¸Ğ½Ğº Ğº R1
 
 interface GigabitEthernet0/1
  ip address 10.0.34.2 255.255.255.252
  no shutdown
-! Ëèíê ê R3
+! Ğ›Ğ¸Ğ½Ğº Ğº R3
 
 interface GigabitEthernet0/2
  ip address 10.0.45.1 255.255.255.252
  no shutdown
-! Ëèíê ê R5 (BGP)
+! Ğ›Ğ¸Ğ½Ğº Ğº R5 (BGP)
 
 ! OSPF
 router ospf 4
@@ -160,12 +160,12 @@ hostname R6
 interface GigabitEthernet0/0
 ip address 10.0.16.2 255.255.255.252
 no shutdown
-! Ëèíê ê R1
+! Ğ›Ğ¸Ğ½Ğº Ğº R1
 
 interface GigabitEthernet0/1
 ip address 10.0.67.1 255.255.255.252
 no shutdown
-! Ëèíê ê R7
+! Ğ›Ğ¸Ğ½Ğº Ğº R7
 
 router ospf 6
 router-id 6.6.6.6
@@ -184,7 +184,7 @@ hostname R7
 interface GigabitEthernet0/0
 ip address 10.0.67.2 255.255.255.252
 no shutdown
-! Ëèíê ê R6
+! Ğ›Ğ¸Ğ½Ğº Ğº R6
 
 interface GigabitEthernet0/1
 ip address 172.16.1.1 255.255.255.0
@@ -216,12 +216,12 @@ hostname R8
 interface GigabitEthernet0/0
 ip address 10.0.28.2 255.255.255.252
 no shutdown
-! Ëèíê ê R2
+! Ğ›Ğ¸Ğ½Ğº Ğº R2
 
 interface GigabitEthernet0/1
 ip address 10.0.89.1 255.255.255.252
 no shutdown
-! Ëèíê ê R9
+! Ğ›Ğ¸Ğ½Ğº Ğº R9
 
 router ospf 8
 router-id 8.8.8.8
@@ -241,7 +241,7 @@ hostname R9
 interface GigabitEthernet0/0
 ip address 10.0.89.2 255.255.255.252
 no shutdown
-! Ëèíê ê R8
+! Ğ›Ğ¸Ğ½Ğº Ğº R8
 
 interface GigabitEthernet0/1
 ip address 172.16.2.1 255.255.255.0
@@ -274,7 +274,7 @@ hostname R10
 interface GigabitEthernet0/0
 ip address 10.0.110.2 255.255.255.252
 no shutdown
-! Ëèíê ê R11
+! Ğ›Ğ¸Ğ½Ğº Ğº R11
 
 router ospf 10
 router-id 10.10.10.10
@@ -291,12 +291,12 @@ hostname R11
 interface GigabitEthernet0/0/0
 ip address 10.0.31.2 255.255.255.252
 no shutdown
-! Ëèíê ê R3
+! Ğ›Ğ¸Ğ½Ğº Ğº R3
 
 interface GigabitEthernet0/0/1
 ip address 10.0.110.1 255.255.255.252
 no shutdown
-! Ëèíê ê R10
+! Ğ›Ğ¸Ğ½Ğº Ğº R10
 
 router ospf 11
 router-id 11.11.11.11
