@@ -1,7 +1,7 @@
 #SW L3
 
 interface FastEthernet0/1
- switchport trunk allowed vlan 10,20,99
+ switchport trunk allowed vlan all
  switchport trunk encapsulation dot1q
  switchport mode trunk
 !
@@ -12,20 +12,20 @@ interface FastEthernet0/3
  description WLC
  switchport access vlan 99
  switchport trunk native vlan 99
- switchport trunk allowed vlan 10,20,99
+ switchport trunk allowed vlan all
  switchport trunk encapsulation dot1q
  switchport mode trunk
 !
 interface FastEthernet0/4
  description AP1
  switchport trunk native vlan 99
- switchport trunk allowed vlan 10,99
+ switchport trunk allowed vlan all
  switchport trunk encapsulation dot1q
  switchport mode trunk
 !
 interface FastEthernet0/5
  description AP2
  switchport trunk native vlan 99
- switchport trunk allowed vlan 10,99
+ switchport trunk allowed vlan all
  switchport trunk encapsulation dot1q
  switchport mode trunk
