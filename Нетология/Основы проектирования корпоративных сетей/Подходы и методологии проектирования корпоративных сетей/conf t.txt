@@ -1,0 +1,67 @@
+###HQ-R1
+
+interface fa0/0
+ip address 192.168.10.1 255.255.255.252
+no shutdown
+
+interface fa0/1
+ip address 192.168.10.5 255.255.255.252
+no shutdown
+
+interface eth0/3/0
+ip address 192.168.10.9 255.255.255.252
+no shutdown
+
+interface eth0/1/0
+ip address 192.168.1.1 255.255.255.192
+no shutdown
+
+
+ip route 192.168.2.0 255.255.255.240 192.168.10.2
+ip route 192.168.3.0 255.255.255.240 192.168.10.6
+ip route 192.168.4.0 255.255.255.240 192.168.10.10
+
+end
+wr mem
+
+###F1-R1
+interface g0/0
+ip address 192.168.10.2 255.255.255.252
+no shutdown
+
+interface g0/1
+ip address 192.168.2.1 255.255.255.240
+no shutdown
+
+ip route 0.0.0.0 0.0.0.0 192.168.10.1
+
+
+###F2-R1
+interface g0/0
+ip address 192.168.10.6 255.255.255.252
+no shutdown
+
+interface g0/1
+ip address 192.168.3.1 255.255.255.240
+no shutdown
+
+ip route 0.0.0.0 0.0.0.0 192.168.10.5
+
+end
+wr mem
+
+###F3-R1
+interface g0/0
+ip address 192.168.10.10 255.255.255.252
+no shutdown
+
+interface g0/1
+ip address 192.168.4.1 255.255.255.240
+no shutdown
+
+
+ip route 0.0.0.0 0.0.0.0 192.168.10.9
+
+end
+wr mem
+
