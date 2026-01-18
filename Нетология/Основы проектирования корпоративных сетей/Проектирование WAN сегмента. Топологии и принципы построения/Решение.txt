@@ -1,0 +1,181 @@
+Задание 1. План IP-адресации
+
+Левая площадка — LAN-A
+Правая площадка — LAN-B
+Между площадками — Internet (R0–Internet–R1)
+FHRP (HSRP) — на LAN-A
+GRE-туннели — поверх Internet
+Динамическая маршрутизация — OSPF
+
+IP адресация обозначена на карте в CPT
+
+Задание 2-3-4. 
+FHRP (HSRP) - При отказе R1 — R0 становится шлюзом.
+GRE-туннели (используем все каналы)
+Динамическая маршрутизация (OSPF)
+на Internet-роутере OSPF не нужен
+OSPF автоматически балансирует трафик по GRE
+При падении одного канала — трафик идёт по второму
+
+Конфигурация маршрутизаторов
+
+### R0 ###
+enable
+conf t
+hostname R0
+
+! LAN
+interface GigabitEthernet0/0/0
+description LAN_A
+ip address 192.168.10.3 255.255.255.0
+standby 1 ip 192.168.10.1
+standby 1 priority 100
+standby 1 preempt
+standby 1 track GigabitEthernet0/0/1
+no shutdown
+
+! INTERNET
+interface GigabitEthernet0/0/1
+description TO-INTERNET
+ip address 10.0.0.5 255.255.255.252
+no shutdown
+
+! GRE TUNNEL
+interface Tunnel1
+ip address 172.16.0.5 255.255.255.252
+tunnel source GigabitEthernet0/0/1
+tunnel destination 10.0.0.10
+tunnel mode gre ip
+no shutdown
+
+! ROUTING 
+ip route 10.0.0.10 255.255.255.255 10.0.0.6
+router ospf 1
+network 192.168.10.0 0.0.0.255 area 0
+network 172.16.0.4 0.0.0.3 area 0
+passive-interface GigabitEthernet0/0/0
+end
+wr mem
+
+
+### R1 ###
+enable
+conf t
+hostname R1
+
+! LAN
+interface GigabitEthernet0/0/0
+description LAN_A
+ip address 192.168.10.2 255.255.255.0
+standby 1 ip 192.168.10.1
+standby 1 priority 110
+standby 1 preempt
+standby 1 track GigabitEthernet0/0/1
+
+no shutdown
+
+! INTERNET
+interface GigabitEthernet0/0/1
+description TO-INTERNET
+ip address 10.0.0.1 255.255.255.252
+no shutdown
+
+! GRE TUNNEL
+interface Tunnel0
+ip address 172.16.0.1 255.255.255.252
+tunnel source GigabitEthernet0/0/1
+tunnel destination 10.0.0.10
+tunnel mode gre ip
+no shutdown
+
+! ROUTING
+ip route 10.0.0.10 255.255.255.255 10.0.0.2
+router ospf 1
+network 192.168.10.0 0.0.0.255 area 0
+network 172.16.0.0 0.0.0.3 area 0
+passive-interface GigabitEthernet0/0/0
+end
+wr mem
+
+### Internet (2911, провайдер) ###
+
+enable
+conf t
+hostname INTERNET
+
+interface GigabitEthernet0/0
+description TO-R1
+ip address 10.0.0.2 255.255.255.252
+no shutdown
+
+interface GigabitEthernet0/1
+description TO-R0
+ip address 10.0.0.6 255.255.255.252
+no shutdown
+
+interface GigabitEthernet0/2
+description TO-R2
+ip address 10.0.0.9 255.255.255.252
+no shutdown
+
+end
+wr mem
+
+
+### R2 ###
+
+enable
+conf t
+hostname R2
+
+! LAN
+interface GigabitEthernet0/0/1
+description LAN_B
+ip address 192.168.20.1 255.255.255.0
+no shutdown
+
+! INTERNET
+interface GigabitEthernet0/0/0
+description TO-INTERNET
+ip address 10.0.0.10 255.255.255.252
+no shutdown
+
+! GRE TUNNEL TO R1
+interface Tunnel0
+ip address 172.16.0.2 255.255.255.252
+tunnel source GigabitEthernet0/0/0
+tunnel destination 10.0.0.1
+tunnel mode gre ip
+no shutdown
+
+! GRE TUNNEL TO R0
+interface Tunnel1
+ip address 172.16.0.6 255.255.255.252
+tunnel source GigabitEthernet0/0/0
+tunnel destination 10.0.0.5
+tunnel mode gre ip
+no shutdown
+
+! ROUTING
+ip route 10.0.0.1 255.255.255.255 10.0.0.9
+ip route 10.0.0.5 255.255.255.255 10.0.0.9
+router ospf 1
+network 192.168.20.0 0.0.0.255 area 0
+network 172.16.0.0 0.0.0.7 area 0
+passive-interface GigabitEthernet0/0/1
+end
+wr mem
+
+
+Итог:
+
+Корректный IP-план
+FHRP (HSRP)
+Два GRE-туннеля
+Динамическая маршрутизация
+Отказоустойчивость
+
+ip route 10.0.0.1 255.255.255.255 10.0.0.1 
+ip route 10.0.0.5 255.255.255.255 10.0.0.5
+ip route 10.0.0.10 255.255.255.255 10.0.0.10
+
