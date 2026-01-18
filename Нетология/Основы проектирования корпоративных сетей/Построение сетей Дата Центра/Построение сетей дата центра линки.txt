@@ -1,0 +1,22 @@
+spine5  as65000
+
+линк e0/3 к leaf1 (as65001) в e0/1
+линк e0/2 к leaf2 (as65002) в e0/1
+линк e0/1 к leaf3 (as65003) в e0/1
+линк e0/0 в leaf4 (as65004) в e0/1
+
+spine 6 as65000
+
+линк e0/3 в leaf1 (as65001) в e0/0
+линк e0/2 в leaf2 (as65002) в e0/0
+линк e0/1 в leaf3 (as65003) в e0/0
+линк e0/0 в leaf4 (as65004) в e0/0
+
+leaf1 as65001
+линк e0/2 в host7 в eth0
+линк e0/3 в host8 в eth0
+
+leaf3 as65003
+линк e0/2 в host9 в eth0
+линк e0/3 в host10 в eth0
+
