@@ -1,0 +1,13 @@
+wget https://download.mikrotik.com/routeros/6.49.10/chr-6.49.10.img.zip
+busybox unzip chr-6.49.10.img.zip
+qm create 113 \
+  --name mikrotik-chr-6.49.10 \
+  --memory 512 \
+  --cores 1 \
+  --net0 virtio,bridge=vmbr0 \
+  --ostype l26
+qm importdisk 113 chr-6.49.10.img local-zfs
+qm set 113 --sata0 local-zfs:vm-113-disk-0
+qm set 113 --boot order=sata0
+qm start 113
+
